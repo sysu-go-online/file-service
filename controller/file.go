@@ -71,9 +71,9 @@ func UpdateFileHandler(w http.ResponseWriter, r *http.Request) error {
 
 	switch op.Operation {
 	case "update":
-		err = model.UpdateFileContent(projectName, username, filePath, op.Content, false, false, p.Language)
+		err = model.UpdateFileContent(username, p.Path, filePath, op.Content, false, false)
 	case "rename":
-		err = model.RenameFile(projectName, username, filePath, op.Content, p.Language)
+		err = model.RenameFile(username, p.Path, filePath, op.Content)
 	default:
 		w.WriteHeader(400)
 		return nil
@@ -136,7 +136,7 @@ func CreateFileHandler(w http.ResponseWriter, r *http.Request) error {
 
 	if ok {
 		// Save file
-		err := model.UpdateFileContent(projectName, username, filePath, "", true, dir, p.Language)
+		err := model.UpdateFileContent(username, p.Path, filePath, "", true, dir)
 		if err != nil {
 			return err
 		}
@@ -183,7 +183,7 @@ func GetFileContentHandler(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	// Load file
-	content, err := model.GetFileContent(projectName, username, filePath, p.Language)
+	content, err := model.GetFileContent(username, p.Path, filePath)
 	if err != nil {
 		return err
 	}
@@ -227,7 +227,7 @@ func DeleteFileHandler(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	// Load file
-	err = model.DeleteFile(projectName, username, filePath, p.Language)
+	err = model.DeleteFile(username, p.Path, filePath)
 	if err != nil {
 		return err
 	}
@@ -269,7 +269,7 @@ func GetFileStructureHandler(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	// Get file structure
-	structure, err := model.GetFileStructure(projectName, username, p.Language)
+	structure, err := model.GetFileStructure(username, p.Path, projectName)
 	if err != nil {
 		return err
 	}

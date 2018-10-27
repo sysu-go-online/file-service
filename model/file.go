@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -13,10 +14,10 @@ import (
 var ROOT = "/home"
 
 // UpdateFileContent update content with given filepath and content
-func UpdateFileContent(projectName string, username string, filePath string, content string, create bool, dir bool, projectType int) error {
+func UpdateFileContent(username string, projectPath string, filePath string, content string, create bool, dir bool) error {
 	// Get absolute path
 	var err error
-	absPath := getFilePath(username, projectName, filePath, projectType)
+	absPath := getFilePath(username, filePath, projectPath)
 
 	// Update file, if the file not exists, judge accroding to the given param
 	if create {
@@ -35,10 +36,10 @@ func UpdateFileContent(projectName string, username string, filePath string, con
 }
 
 // DeleteFile delete file accroding to the given path
-func DeleteFile(projectName string, username string, filePath string, projectType int) error {
+func DeleteFile(username string, projectPath string, filePath string) error {
 	// Get absolute path
 	var err error
-	absPath := getFilePath(username, projectName, filePath, projectType)
+	absPath := getFilePath(username, filePath, projectPath)
 
 	// Delete file
 	err = os.RemoveAll(absPath)
@@ -46,12 +47,19 @@ func DeleteFile(projectName string, username string, filePath string, projectTyp
 }
 
 // GetFileContent returns required file content
-func GetFileContent(projectName string, username string, filePath string, projectType int) ([]byte, error) {
+func GetFileContent(username string, projectPath string, filePath string) ([]byte, error) {
 	// Get absolute path
 	var err error
-	absPath := getFilePath(username, projectName, filePath, projectType)
+	absPath := getFilePath(username, filePath, projectPath)
 
 	// Read file content
+	f, err := os.Stat(absPath)
+	if err != nil {
+		return nil, err
+	}
+	if f.Size() > 5*1024*1024 {
+		return nil, errors.New("File is too Large")
+	}
 	content, err := ioutil.ReadFile(absPath)
 	if err != nil {
 		return nil, err
@@ -60,10 +68,10 @@ func GetFileContent(projectName string, username string, filePath string, projec
 }
 
 // GetFileStructure read file structure and return it
-func GetFileStructure(projectName string, username string, projectType int) (*types.FileStructure, error) {
+func GetFileStructure(username string, projectPath string, projectName string) (*types.FileStructure, error) {
 	// Get absolute path
 	var err error
-	absPath := getFilePath(username, projectName, "/", projectType)
+	absPath := getFilePath(username, "/", projectPath)
 
 	// Recurisively get file structure
 	s, err := tools.Dfs(absPath, 0)
@@ -82,22 +90,13 @@ func GetFileStructure(projectName string, username string, projectType int) (*ty
 }
 
 // RenameFile rename file
-func RenameFile(projectName string, username string, rawPathName, afterName string, projectType int) error {
+func RenameFile(username string, projectPath string, rawPathName, afterName string) error {
 	// Get absolute path
-	absPath := getFilePath(username, projectName, rawPathName, projectType)
-	newPath := getFilePath(username, projectName, afterName, projectType)
-
+	absPath := getFilePath(username, rawPathName, projectPath)
+	newPath := getFilePath(username, afterName, projectPath)
 	return os.Rename(absPath, newPath)
 }
 
-func getFilePath(username string, projectName string, filePath string, projectType int) string {
-	switch projectType {
-	case 0:
-		// golang
-		return filepath.Join(ROOT, username, "go/src/github.com", projectName, filePath)
-	case 1:
-		// cpp
-		return filepath.Join(ROOT, username, "cpp", projectName, filePath)
-	}
-	return ""
+func getFilePath(username string, filePath string, projectPath string) string {
+	return filepath.Join("home", username, "projects", projectPath, filePath)
 }
