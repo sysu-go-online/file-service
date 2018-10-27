@@ -14,10 +14,10 @@ import (
 var ROOT = "/home"
 
 // UpdateFileContent update content with given filepath and content
-func UpdateFileContent(username string, projectPath string, filePath string, content string, create bool, dir bool) error {
+func UpdateFileContent(username string, projectPath string, projectName string, filePath string, content string, create bool, dir bool) error {
 	// Get absolute path
 	var err error
-	absPath := getFilePath(username, filePath, projectPath)
+	absPath := getFilePath(username, filePath, projectPath, projectName)
 
 	// Update file, if the file not exists, judge accroding to the given param
 	if create {
@@ -36,10 +36,10 @@ func UpdateFileContent(username string, projectPath string, filePath string, con
 }
 
 // DeleteFile delete file accroding to the given path
-func DeleteFile(username string, projectPath string, filePath string) error {
+func DeleteFile(username string, projectPath string, projectName string, filePath string) error {
 	// Get absolute path
 	var err error
-	absPath := getFilePath(username, filePath, projectPath)
+	absPath := getFilePath(username, filePath, projectPath, projectName)
 
 	// Delete file
 	err = os.RemoveAll(absPath)
@@ -47,10 +47,10 @@ func DeleteFile(username string, projectPath string, filePath string) error {
 }
 
 // GetFileContent returns required file content
-func GetFileContent(username string, projectPath string, filePath string) ([]byte, error) {
+func GetFileContent(username string, projectPath string, projectName string, filePath string) ([]byte, error) {
 	// Get absolute path
 	var err error
-	absPath := getFilePath(username, filePath, projectPath)
+	absPath := getFilePath(username, filePath, projectPath, projectName)
 
 	// Read file content
 	f, err := os.Stat(absPath)
@@ -71,7 +71,7 @@ func GetFileContent(username string, projectPath string, filePath string) ([]byt
 func GetFileStructure(username string, projectPath string, projectName string) (*types.FileStructure, error) {
 	// Get absolute path
 	var err error
-	absPath := getFilePath(username, "/", projectPath)
+	absPath := getFilePath(username, "/", projectPath, projectName)
 
 	// Recurisively get file structure
 	s, err := tools.Dfs(absPath, 0)
@@ -90,13 +90,13 @@ func GetFileStructure(username string, projectPath string, projectName string) (
 }
 
 // RenameFile rename file
-func RenameFile(username string, projectPath string, rawPathName, afterName string) error {
+func RenameFile(username string, projectPath string, projectName string, rawPathName, afterName string) error {
 	// Get absolute path
-	absPath := getFilePath(username, rawPathName, projectPath)
-	newPath := getFilePath(username, afterName, projectPath)
+	absPath := getFilePath(username, rawPathName, projectPath, projectName)
+	newPath := getFilePath(username, afterName, projectPath, projectName)
 	return os.Rename(absPath, newPath)
 }
 
-func getFilePath(username string, filePath string, projectPath string) string {
-	return filepath.Join("home", username, "projects", projectPath, filePath)
+func getFilePath(username string, filePath string, projectPath string, projectName string) string {
+	return filepath.Join("/home", username, "projects", projectPath, projectName, filePath)
 }

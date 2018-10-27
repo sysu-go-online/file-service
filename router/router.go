@@ -15,11 +15,11 @@ var upgrader = websocket.Upgrader{}
 func GetServer() *negroni.Negroni {
 	r := mux.NewRouter()
 
-	r.Handle("", types.ErrorHandler(controller.GetFileStructureHandler)).Methods("GET")
-	r.Handle("/{filepath:.*}", types.ErrorHandler(controller.GetFileContentHandler)).Methods("GET")
-	r.Handle("/{filepath:.*}", types.ErrorHandler(controller.UpdateFileHandler)).Methods("PATCH")
-	r.Handle("/{filepath:.*}", types.ErrorHandler(controller.CreateFileHandler)).Methods("POST")
-	r.Handle("/{filepath:.*}", types.ErrorHandler(controller.DeleteFileHandler)).Methods("DELETE")
+	r.Handle("/{username}/projects/{projectname}/files", types.ErrorHandler(controller.GetFileStructureHandler)).Methods("GET")
+	r.Handle("/{username}/projects/{projectname}/files/{filepath:.*}", types.ErrorHandler(controller.GetFileContentHandler)).Methods("GET")
+	r.Handle("/{username}/projects/{projectname}/files/{filepath:.*}", types.ErrorHandler(controller.UpdateFileHandler)).Methods("PATCH")
+	r.Handle("/{username}/projects/{projectname}/files/{filepath:.*}", types.ErrorHandler(controller.CreateFileHandler)).Methods("POST")
+	r.Handle("/{username}/projects/{projectname}/files/{filepath:.*}", types.ErrorHandler(controller.DeleteFileHandler)).Methods("DELETE")
 
 	// project collection
 
