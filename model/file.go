@@ -83,8 +83,6 @@ func GetFileStructure(username string, projectPath string, projectName string) (
 		Name:       projectName,
 		Type:       "folder",
 		Children:   s,
-		Root:       true,
-		IsSelected: true,
 	}
 	return &root, nil
 }
