@@ -81,7 +81,7 @@ func GetFileStructure(username string, projectPath string, projectName string) (
 	// Add root content
 	root := types.FileStructure{
 		Name:       projectName,
-		Type:       "dir",
+		Type:       "folder",
 		Children:   s,
 		Root:       true,
 		IsSelected: true,
